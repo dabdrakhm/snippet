@@ -2,22 +2,9 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
-
-func main() {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/snippet/view", snippetView)
-	mux.HandleFunc("/snippet/create", snippetCreate)
-
-	log.Println("Starting on http://localhost:4000\n")
-	err := http.ListenAndServe(":4000", mux)
-	log.Fatal(err)
-}
 
 func home(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
