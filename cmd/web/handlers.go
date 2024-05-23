@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -11,7 +13,17 @@ func home(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	w.Write([]byte("Welcome to the club"))
+	ts, err := template.ParseFiles("./ui/html/pages/home.tmpl.html")
+	if err != nil {
+		http.Error(w, "Internal Sever Error", 500)
+		return
+	}
+	err = ts.Execute(w, nil)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "Internal Sever Error", 500)
+	}
+	w.Write([]byte("Hello"))
 }
 
 func snippetView(w http.ResponseWriter, r *http.Request) {
@@ -25,19 +37,6 @@ func snippetView(w http.ResponseWriter, r *http.Request) {
 }
 
 func snippetCreate(w http.ResponseWriter, r *http.Request) {
-	// Set a new cache-control header. If an existing "Cache-Control" header exists
-	// it will be overwritten.
-	w.Header().Set("Cache-Control", "public, max-age=31536000")
-	// In contrast, the Add() method appends a new "Cache-Control" header and can
-	// be called multiple times.
-	w.Header().Add("Cache-Control", "public")
-	w.Header().Add("Cache-Control", "max-age=31536000")
-	// Delete all values for the "Cache-Control" header.
-	w.Header().Del("Cache-Control")
-	// Retrieve the first value for the "Cache-Control" header.
-	w.Header().Get("Cache-Control")
-	// Retrieve a slice of all values for the "Cache-Control" header.
-	w.Header().Values("Cache-Control")
 	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
